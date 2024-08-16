@@ -33,7 +33,8 @@ public class WikimediaChangeHandler implements EventHandler {
     @Override
     public void onMessage(String event, MessageEvent messageEvent) {
         log.info(messageEvent.getData());
-        // asynchronous
+        // asynchronous send
+        // Intentionally with a null key and the data will be distributed evenly among all partitions (depending on the algorithm)
         kafkaProducer.send(new ProducerRecord<>(topic, messageEvent.getData()));
     }
 

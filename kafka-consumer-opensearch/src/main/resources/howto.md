@@ -1,0 +1,56 @@
+# How to access opensearch
+http://localhost:5601/app/dev_tools#/console
+
+
+# Access a specific document in open search
+GET /wikimedia/_doc/79b014d6-4b58-4065-a12c-723fdf5ef445
+
+Result:
+{
+"_index" : "wikimedia",
+"_type" : "_doc",
+"_id" : "79b014d6-4b58-4065-a12c-723fdf5ef445",
+"_version" : 1,
+"_seq_no" : 30368,
+"_primary_term" : 2,
+"found" : true,
+"_source" : {
+"$schema" : "/mediawiki/recentchange/1.0.0",
+"meta" : {
+"uri" : "https://www.wikidata.org/wiki/Q15174920",
+"request_id" : "5768005b-5f2c-41a8-a229-f39f2140f428",
+"id" : "79b014d6-4b58-4065-a12c-723fdf5ef445",
+"dt" : "2024-08-16T07:49:38Z",
+"domain" : "www.wikidata.org",
+"stream" : "mediawiki.recentchange",
+"topic" : "eqiad.mediawiki.recentchange",
+"partition" : 0,
+"offset" : 5338431463
+},
+"id" : 2294780187,
+"type" : "edit",
+"namespace" : 0,
+"title" : "Q15174920",
+"title_url" : "https://www.wikidata.org/wiki/Q15174920",
+"comment" : "/* wbsetclaim-create:2||1 */ [[Property:P2146]]: 1,268.850329624045±0.0000010443 day, from JPL",
+"timestamp" : 1723794578,
+"user" : "LiMrBot",
+"bot" : true,
+"notify_url" : "https://www.wikidata.org/w/index.php?diff=2228568834&oldid=2228568828&rcid=2294780187",
+"minor" : false,
+"patrolled" : true,
+"length" : {
+"old" : 54067,
+"new" : 56316
+},
+"revision" : {
+"old" : 2228568828,
+"new" : 2228568834
+},
+"server_url" : "https://www.wikidata.org",
+"server_name" : "www.wikidata.org",
+"server_script_path" : "/w",
+"wiki" : "wikidatawiki",
+"parsedcomment" : """‎<span dir="auto"><span class="autocomment">Vytvořeno tvrzení: </span></span> <a href="/wiki/Property:P2146" title="‎doba oběhu‎ | ‎the time taken for a given astronomic object to make one complete orbit about another object‎"><span class="wb-itemlink"><span class="wb-itemlink-label" lang="cs" dir="ltr">doba oběhu</span> <span class="wb-itemlink-id">(P2146)</span></span></a>: 1,268.850329624045±0.0000010443 day, from JPL"""
+}
+}

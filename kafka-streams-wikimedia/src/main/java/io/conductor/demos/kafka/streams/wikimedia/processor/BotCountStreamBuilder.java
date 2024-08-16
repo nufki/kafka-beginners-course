@@ -70,6 +70,7 @@ public class BotCountStreamBuilder {
 
     public void setup() {
         this.inputStream
+                // Since the key is null we go straight to the value and filter for the bot (see sample-record.txt)
                 .mapValues(changeJson -> {
                     try {
                         final JsonNode jsonNode = OBJECT_MAPPER.readTree(changeJson);
@@ -81,8 +82,11 @@ public class BotCountStreamBuilder {
                         return "parse-error";
                     }
                 })
+                // Group the records of this KStream on a new key (here either bot or non-bot)
                 .groupBy((key, botOrNot) -> botOrNot)
+                // Then we count the occurrences which is stored in a ktable
                 .count(Materialized.as(BOT_COUNT_STORE))
+                // back to a stream to
                 .toStream()
                 .mapValues((key, value) -> {
                     /*  Sample output:
@@ -99,4 +103,18 @@ public class BotCountStreamBuilder {
                 })
                 .to(BOT_COUNT_TOPIC);
     }
+
+    /*
+        What does Materialized.as(...) do?
+        The Materialized.as(...) method in Kafka Streams is used to specify the name of the underlying state store that will
+        be used to materialize (store) the results of the aggregation, in this case, the count operation. By naming the state
+        store (BOT_COUNT_STORE), you make it possible to query this store directly later on if needed, and Kafka Streams will
+        persist the results of the count operation in a named store rather than using a default, anonymous store.
+
+        What window is applied?
+        In the provided code, no explicit windowing is applied. The stream groups records by the new key (either "bot" or "non-bot")
+        and then counts the occurrences. Since there's no windowing function like windowedBy used, this counting is done on an ongoing
+        basis (over the entire duration of the stream's life), meaning it's effectively unbounded and accumulates counts for each
+        key across the entire stream.
+     */
 }

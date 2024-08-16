@@ -24,6 +24,7 @@ public class WebsiteCountStreamBuilder {
     public void setup() {
         final TimeWindows timeWindows = TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1L));
         this.inputStream
+                // Reshuffle to new key (server_name) -> from null to server_name
                 .selectKey((k, changeJson) -> {
                     try {
                         final JsonNode jsonNode = OBJECT_MAPPER.readTree(changeJson);
@@ -32,7 +33,9 @@ public class WebsiteCountStreamBuilder {
                         return "parse-error";
                     }
                 })
+                // Group by the server_name
                 .groupByKey()
+                // Apply the counting on a 1 minute basis e.g. the statistic measures the throughput on a 1 minute basis
                 .windowedBy(timeWindows)
                 .count(Materialized.as(WEBSITE_COUNT_STORE))
                 .toStream()

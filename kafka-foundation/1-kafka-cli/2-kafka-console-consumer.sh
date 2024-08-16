@@ -41,4 +41,4 @@ kafka-console-producer.sh --bootstrap-server localhost:9092 --producer-property 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic second_topic --from-beginning
 
 # display key, values and timestamp in consumer
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic second_topic --formatter kafka.tools.DefaultMessageFormatter --property print.timestamp=true --property print.key=true --property print.value=true --property print.partition=true --from-beginning
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic second_topic --formatter  org.apache.kafka.tools.consumer.DefaultMessageFormatter  --property print.timestamp=true --property print.key=true --property print.value=true --property print.partition=true --from-beginning

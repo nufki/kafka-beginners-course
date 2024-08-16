@@ -23,9 +23,13 @@ public class EventCountTimeseriesBuilder {
     public void setup() {
         final TimeWindows timeWindows = TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(10));
         this.inputStream
+                 // Re-shuffle to a new key: key-to-group (from null)
                 .selectKey((key, value) -> "key-to-group")
+                 // Group by thi
                 .groupByKey()
+                 // Window by 10 seconds
                 .windowedBy(timeWindows)
+                 // Count the number of pages per 10 second
                 .count(Materialized.as(TIMESERIES_STORE))
                 .toStream()
                 .mapValues((readOnlyKey, value) -> {

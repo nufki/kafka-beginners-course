@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.Properties;
 
 public class OpenSearchConsumer {
+    private static final String INPUT_TOPIC = "wikimedia.recentchange";
+    private static final Properties props = new Properties();
 
     public static RestHighLevelClient createOpenSearchClient() {
         String connString = "http://localhost:9200";
@@ -73,16 +75,15 @@ public class OpenSearchConsumer {
         String groupId = "consumer-opensearch-demo";
 
         // create consumer configs
-        Properties properties = new Properties();
-        properties.setProperty(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-        properties.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // Consumer is no longer commit offsets automatically
+        props.setProperty(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // Consumer is no longer commit offsets automatically
 
         // create consumer
-        return new KafkaConsumer<>(properties);
+        return new KafkaConsumer<>(props);
     }
 
     private static String extractId(String json){
@@ -96,7 +97,6 @@ public class OpenSearchConsumer {
     }
 
     public static void main(String[] args) throws IOException {
-
         Logger log = LoggerFactory.getLogger(OpenSearchConsumer.class.getSimpleName());
 
         // first create an OpenSearch Client
@@ -109,6 +109,7 @@ public class OpenSearchConsumer {
         final Thread mainThread = Thread.currentThread();
 
         // we need to create the index on OpenSearch if it doesn't exist already
+        // the try block will autoclose the opensearch client in case of failures
         try(openSearchClient; consumer) { // Note this is new in java. everything that is inside this try block will "auto close in case of exception"
             boolean indexExists = openSearchClient.indices().exists(new GetIndexRequest("wikimedia"), RequestOptions.DEFAULT);
 
@@ -121,7 +122,7 @@ public class OpenSearchConsumer {
             }
 
             // we subscribe the consumer
-            consumer.subscribe(Collections.singleton("wikimedia.recentchange"));
+            consumer.subscribe(Collections.singleton(INPUT_TOPIC));
 
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
