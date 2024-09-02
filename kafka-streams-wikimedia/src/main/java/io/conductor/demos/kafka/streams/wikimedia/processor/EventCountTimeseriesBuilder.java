@@ -23,9 +23,9 @@ public class EventCountTimeseriesBuilder {
     public void setup() {
         final TimeWindows timeWindows = TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(10));
         this.inputStream
-                 // Re-shuffle to a new key: key-to-group (from null)
+                 // Re-shuffle to a new key: key-to-group (from null), so all records are given the same key "key-to-group".
                 .selectKey((key, value) -> "key-to-group")
-                 // Group by thi
+                 // Group by the key
                 .groupByKey()
                  // Window by 10 seconds
                 .windowedBy(timeWindows)
